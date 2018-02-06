@@ -109,6 +109,11 @@ class CheckMySQLStatus < Sensu::Plugin::Check::CLI
          long: '--debug',
          default: false
 
+   option :no_socket,
+         description: 'Disables the socket option',
+         long: '--no-socket',
+         default: false
+
   def credentials
     if config[:ini]
       ini = IniFile.load(config[:ini])
@@ -126,8 +131,14 @@ class CheckMySQLStatus < Sensu::Plugin::Check::CLI
 
   # Status check
   def status_check(db_user, db_pass, db_socket)
+    if :no_socket
+      puts "remove cmd socket"
+      cmd = "#{config[:binary]} -u #{db_user} -h #{config[:hostname]} --port #{config[:port]} \
+        -p\"#{db_pass.strip}\" --batch --disable-column-names -e 'show schemas;'"
+    else
     cmd = "#{config[:binary]} -u #{db_user} -h #{config[:hostname]} --port #{config[:port]} \
         --socket #{db_socket} -p\"#{db_pass.strip}\" --batch --disable-column-names -e 'show schemas;'"
+    end
     begin
       stdout, _stderr, status = Open3.capture3(cmd)
       if status.to_i == 0
