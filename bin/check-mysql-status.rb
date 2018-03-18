@@ -62,12 +62,6 @@ class CheckMySQLStatus < Sensu::Plugin::Check::CLI
          long: '--hostname HOST',
          default: 'localhost'
 
-  option :database,
-         description: 'Database schema to connect to',
-         short: '-d DATABASE',
-         long: '--database DATABASE',
-         default: 'test'
-
   option :port,
          description: 'Port to connect to',
          short: '-P PORT',
